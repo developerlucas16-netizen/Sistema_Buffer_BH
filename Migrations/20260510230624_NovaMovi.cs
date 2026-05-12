@@ -5,7 +5,7 @@
 namespace Sistema_Buffer_BH.Migrations
 {
     /// <inheritdoc />
-    public partial class Inicial : Migration
+    public partial class NovaMovi : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

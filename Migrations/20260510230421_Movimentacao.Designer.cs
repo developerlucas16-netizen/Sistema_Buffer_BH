@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sistema_Buffer_BH.Data;
 
@@ -11,9 +12,11 @@ using Sistema_Buffer_BH.Data;
 namespace Sistema_Buffer_BH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260510230421_Movimentacao")]
+    partial class Movimentacao
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -215,17 +218,12 @@ namespace Sistema_Buffer_BH.Migrations
             modelBuilder.Entity("Sistema_Buffer_BH.Models.MovimentacaoModel", b =>
                 {
                     b.HasOne("Sistema_Buffer_BH.Models.CaixaModel", "Caixa")
-                        .WithMany("Movimentacao")
+                        .WithMany()
                         .HasForeignKey("CaixaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Caixa");
-                });
-
-            modelBuilder.Entity("Sistema_Buffer_BH.Models.CaixaModel", b =>
-                {
-                    b.Navigation("Movimentacao");
                 });
 #pragma warning restore 612, 618
         }

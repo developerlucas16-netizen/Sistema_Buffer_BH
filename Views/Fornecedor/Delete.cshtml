@@ -4,30 +4,30 @@
     ViewData["Title"] = "Delete";
 }
 
-<div class="mb-5 text-center text-black">
-    <h1 class="text-black">Excluir Funcionario</h1>
-</div>
-<hr />
+<div class="d-flex justify-content-between align-items-center mt-2">
+    <h1 class="ps-2">Excluir Funcionario</h1>
 
-<div style="margin-left:35%">
-    <dl class="row">
-        <dt class="col-sm-2 fs-5">
-            @Html.DisplayNameFor(model => model.Nome)
-        </dt>
-        <dd class="col-sm-10 fs-5">
-            @Html.DisplayFor(model => model.Nome)
-        </dd>
-    </dl>
+    <a class="btn mx-5 fs-3 icone" asp-controller="Fornecedor" asp-action="Index"><i class="bi bi-x-square"></i></a>
 </div>
 
 <hr />
 
-<div style="margin-left:35%">
+<div class="d-flex justify-content-center">
+    <div class="card text-center bg-dark mb-3" style="width: 35rem; color:white; border-radius: 3rem;">
+        <div class="card-body">
+            <h2 class="card-title">Fornecedor</h2>
+            <hr />
+            <p class="fs-4">Nome:    @Html.DisplayFor(model => model.Nome)</p>
+            <p class="fs-4">Código:  @Html.DisplayFor(model => model.Id)</p>
+        </div>
+    </div>
+</div>
+
+<div>
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <div class="d-flex gap-3 mt-5">
-            <input type="submit" value="Delete" class="btn btn-danger" style="width:20%" />
-            <a class="btn btn-outline-secondary" style="width:20%" asp-action="Index">Back</a>
+        <div class="d-flex justify-content-center gap-3 mt-5">
+            <button type="submit" class="btn btn-delete" style="width:20%">Excluir</button>
         </div>
     </form>
 </div>

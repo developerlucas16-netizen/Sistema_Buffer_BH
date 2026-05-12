@@ -31,8 +31,7 @@ namespace Sistema_Buffer_BH.Controllers
                 return NotFound();
             }
 
-            var estoqueModel = await _context.Estoque
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var estoqueModel = await _context.Estoque                .FirstOrDefaultAsync(m => m.Id == id);
             if (estoqueModel == null)
             {
                 return NotFound();

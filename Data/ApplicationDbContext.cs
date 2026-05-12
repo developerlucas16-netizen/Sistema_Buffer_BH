@@ -14,5 +14,6 @@ namespace Sistema_Buffer_BH.Data
         public DbSet<Sistema_Buffer_BH.Models.EstoqueModel> Estoque {  get; set; }
         public DbSet<Sistema_Buffer_BH.Models.FornecedorModel> Fornecedor { get; set; }
         public DbSet<Sistema_Buffer_BH.Models.FuncionarioModel> Funcionario { get; set; }
+        public DbSet<Sistema_Buffer_BH.Models.MovimentacaoModel> Movimentacao { get; set; }
     }
 }

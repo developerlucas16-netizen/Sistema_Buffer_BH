@@ -12,200 +12,137 @@ namespace Sistema_Buffer_BH.Controllers
         {
             _context = context;
         }
-
-        // GET: Caixa
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            var hoje = DateTime.Today;
 
-        // GET: Caixa/details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null || _context.Caixa == null)
+            var caixa = await _context.Caixa
+                .Include(c => c.Movimentacao)
+                .FirstOrDefaultAsync( caixa => 
+                caixa.DataAbertura == hoje &&
+                caixa.Status == true
+                );
+
+            if (caixa == null)
             {
-                return NotFound();
+                return View("AbrirCaixa");
             }
 
-            var caixaModel = await _context.Caixa
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (caixaModel == null)
-            {
-                return NotFound();
-            }
+            caixa.TotalEntradas = caixa.Movimentacao
+                .Where(x => x.Tipo == "Entrada")
+                .Sum(x => x.Valor);
 
-            return View(caixaModel);
-        }
+            caixa.TotalSaidas = caixa.Movimentacao
+                .Where(x => x.Tipo == "Saida")
+                .Sum(x => x.Valor);
 
-        // GET: Caixa/Create
-        public IActionResult Caixa_Inicial()
-        {
-            return View();
-        }
+            caixa.Lucro = caixa.TotalEntradas - caixa.TotalSaidas;
 
-        // POST: Caixa/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        public IActionResult Caixa_Inicial(CaixaFakeModel caixamodel)
-        {
-            if (ModelState.IsValid)
-            {
-                var novo = new CaixaModel();
-                novo.Forma = caixamodel.Tipo;
-                novo.Valor = Convert.ToDouble(caixamodel.Valor);
-                novo.Data = caixamodel.Data;
-
-                _context.Add(novo);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(caixamodel);
-        }
-
-        // GET: Caixa/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null || _context.Caixa == null)
-            {
-                return NotFound();
-            }
-
-            var caixaModel = await _context.Caixa.FindAsync(id);
-            if (caixaModel == null)
-            {
-                return NotFound();
-            }
-            return View(caixaModel);
-        }
-
-        // POST: Caixa/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Entrada,Saida,Data,Pedido_Id")] CaixaModel caixaModel)
-        {
-            if (id != caixaModel.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Caixa.Update(caixaModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!CaixaModelExists(caixaModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(caixaModel);
-        }
-
-        // GET: Caixa/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null || _context.Caixa == null)
-            {
-                return NotFound();
-            }
-
-            var caixaModel = await _context.Caixa
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (caixaModel == null)
-            {
-                return NotFound();
-            }
-
-            return View(caixaModel);
-        }
-
-        // POST: Caixa/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            if (_context.Caixa == null)
-            {
-                return Problem("Entity set 'ApplicationDbContext.Caixa'  is null.");
-            }
-            var caixaModel = await _context.Caixa.FindAsync(id);
-            if (caixaModel != null)
-            {
-                _context.Caixa.Remove(caixaModel);
-            }
+            caixa.ValorFinal = caixa.ValorInicial + caixa.Lucro;
 
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
 
-        private bool CaixaModelExists(int id)
-        {
-            return (_context.Caixa?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
-
-        public IActionResult Entrada()
-        {
-            return View();
+            return View("Dashbord", caixa);
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Entrada([Bind("Id,Tipo,Valor,Data")] CaixaFakeModel caixamodel)
+        public async Task<IActionResult> AbrirCaixa(decimal valorInicial)
         {
-            if (ModelState.IsValid)
+            var caixa = new CaixaModel
             {
-                var nuevo = new CaixaModel();
-                nuevo.Forma = caixamodel.Tipo;
-                nuevo.Valor = Convert.ToDouble(caixamodel.Valor);
-                nuevo.Data = caixamodel.Data;
+                DataAbertura = DateTime.Today,
+                ValorInicial = valorInicial,
+                Status = true
+            };
 
-                _context.Add(nuevo);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(caixamodel);
+            _context.Caixa.Add(caixa);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
-        public IActionResult Saida()
+        public IActionResult AdicionarMovimentacao(int caixaId)
         {
-            return View();
+            ViewBag.CaixaId = caixaId;
+            return View("AdicionarMovimentacao");
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
-        public IActionResult Saida([Bind("Id,Tipo,Valor,Data")] CaixaFakeModel caixamodel)
+        public async Task<IActionResult> AdicionarMovimentacao(
+            int CaixaId,
+            string descricao,
+            string tipo,
+            decimal valor
+            )
         {
-            if (ModelState.IsValid)
-            {
-                var caixa = new CaixaModel();
-                caixa.Forma = caixamodel.Tipo;
-                caixa.Valor = Convert.ToDouble(caixamodel.Valor);
-                caixa.Data = caixamodel.Data;
+            var caixa = await _context.Caixa
+                .FirstOrDefaultAsync(c => c.Id == CaixaId);
 
-                _context.Add(caixa);
-                _context.SaveChanges();
-                return RedirectToAction(nameof(Index));
+            if (caixa == null)
+            {
+                return NotFound();
             }
-            return View(caixamodel);
+
+            if (!caixa.Status)
+            {
+                return BadRequest("O caixa está fechado. Não é possível adicionar movimentações.");
+            }
+
+            var movimentacao = new MovimentacaoModel
+            {
+                CaixaId = CaixaId,
+                Data = DateTime.Now,
+                Descricao = descricao,
+                Tipo = tipo,
+                Valor = valor
+            };
+
+            _context.Movimentacao.Add(movimentacao);
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
         }
 
-        public IActionResult Pesquisar()
+        [HttpPost]
+        public async Task<IActionResult> FecharCaixa(int id)
         {
-            IEnumerable<CaixaModel>? caixa = _context.Caixa;
-            return View(caixa);
+            var caixa = await _context.Caixa
+                .Include(c => c.Movimentacao)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (caixa == null)
+            {
+                return NotFound();
+            }
+
+            caixa.TotalEntradas = caixa.Movimentacao
+                .Where(x => x.Tipo == "Entrada")
+                .Sum(x => x.Valor);
+
+            caixa.TotalSaidas = caixa.Movimentacao
+                .Where(x => x.Tipo == "Saida")
+                .Sum(x => x.Valor);
+
+            caixa.Lucro = caixa.TotalEntradas - caixa.TotalSaidas;
+
+            caixa.ValorFinal = caixa.ValorInicial + caixa.Lucro;
+
+            caixa.Status = false;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        public async Task<IActionResult> Historico()
+        {
+            var caixas = await _context.Caixa
+                .OrderByDescending(c => c.DataAbertura)
+                .ToListAsync();
+
+            return View(caixas);
         }
     }
 }

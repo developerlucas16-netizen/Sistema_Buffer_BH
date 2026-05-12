@@ -1,0 +1,65 @@
+﻿@model List<Sistema_Buffer_BH.Models.CaixaModel>
+
+<h1>Histórico de Caixas</h1>
+
+<hr />
+
+<table class="table table-bordered">
+
+    <thead>
+
+        <tr>
+            <th>Data</th>
+            <th>Inicial</th>
+            <th>Final</th>
+            <th>Lucro</th>
+            <th>Status</th>
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        @foreach (var caixa in Model)
+        {
+            <tr>
+
+                <td>
+                    @caixa.DataAbertura
+                </td>
+
+                <td>
+                    R$ @caixa.ValorInicial
+                </td>
+
+                <td>
+                    R$ @caixa.ValorFinal
+                </td>
+
+                <td>
+                    R$ @caixa.Lucro
+                </td>
+
+                <td>
+
+                    @if (caixa.Status)
+                    {
+                        <span class="text-success">
+                            Aberto
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="text-danger">
+                            Fechado
+                        </span>
+                    }
+
+                </td>
+
+            </tr>
+        }
+
+    </tbody>
+
+</table>
