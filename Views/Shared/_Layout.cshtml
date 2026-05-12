@@ -58,7 +58,6 @@
                         </li>
 
                     </ul>
-                    <partial name="_LoginPartial" />
                 </div>
 
 
@@ -113,33 +112,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js"
             integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm"
             crossorigin="anonymous"></script>
-    <style>
-        #link {
-            position: relative;
-            color: #ffc501;
-            text-decoration: none;
-        }
-
-            #link:before {
-                content: "";
-                position: absolute;
-                width: 100%;
-                height: 3px;
-                bottom: 0;
-                left: 0;
-                background-color: #fd7e14;
-                visibility: hidden;
-                -webkit-transform: scaleX(0);
-                transform: scaleX(0);
-                -webkit-transition: all 0.3s ease-in-out 0s;
-                transition: all 0.3s ease-in-out 0s;
-            }
-
-            #link:hover:before {
-                visibility: visible;
-                -webkit-transform: scaleX(1);
-                transform: scaleX(1);
-            }
-    </style>
 </body>
 </html>

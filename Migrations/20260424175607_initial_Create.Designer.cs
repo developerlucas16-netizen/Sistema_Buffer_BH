@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Sistema_Buffer_BH.Data;
 
@@ -11,9 +12,11 @@ using Sistema_Buffer_BH.Data;
 namespace Sistema_Buffer_BH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260424175607_initial_Create")]
+    partial class initial_Create
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,29 +36,12 @@ namespace Sistema_Buffer_BH.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DataAbertura")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("Forma")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DataFechamento")
-                        .HasColumnType("datetime2");
-
-                    b.Property<decimal>("Lucro")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
-                    b.Property<decimal>("TotalEntradas")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("TotalSaidas")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ValorFinal")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<decimal>("ValorInicial")
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<double>("Valor")
+                        .HasColumnType("float");
 
                     b.HasKey("Id");
 
@@ -171,38 +157,6 @@ namespace Sistema_Buffer_BH.Migrations
                     b.ToTable("Funcionario");
                 });
 
-            modelBuilder.Entity("Sistema_Buffer_BH.Models.MovimentacaoModel", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CaixaId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Data")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Descricao")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Tipo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("Valor")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CaixaId");
-
-                    b.ToTable("Movimentacao");
-                });
-
             modelBuilder.Entity("Sistema_Buffer_BH.Models.EstoqueModel", b =>
                 {
                     b.HasOne("Sistema_Buffer_BH.Models.FornecedorModel", "Fornecedor")
@@ -210,22 +164,6 @@ namespace Sistema_Buffer_BH.Migrations
                         .HasForeignKey("FornecedorId");
 
                     b.Navigation("Fornecedor");
-                });
-
-            modelBuilder.Entity("Sistema_Buffer_BH.Models.MovimentacaoModel", b =>
-                {
-                    b.HasOne("Sistema_Buffer_BH.Models.CaixaModel", "Caixa")
-                        .WithMany("Movimentacao")
-                        .HasForeignKey("CaixaId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Caixa");
-                });
-
-            modelBuilder.Entity("Sistema_Buffer_BH.Models.CaixaModel", b =>
-                {
-                    b.Navigation("Movimentacao");
                 });
 #pragma warning restore 612, 618
         }

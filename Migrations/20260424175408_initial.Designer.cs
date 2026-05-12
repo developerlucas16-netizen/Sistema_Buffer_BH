@@ -12,8 +12,8 @@ using Sistema_Buffer_BH.Data;
 namespace Sistema_Buffer_BH.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260407061529_Atualizazao_01")]
-    partial class Atualizazao_01
+    [Migration("20260424175408_initial")]
+    partial class initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

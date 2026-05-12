@@ -4,16 +4,30 @@
     ViewData["Title"] = "Index";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-5 mt-2 border-bottom">
-    <h1 class="container">Funcionarios</h1>
+<div class="d-flex justify-content-between align-items-center mt-2">
+    <h1 class="ps-2">Funcionarios</h1>
 
-    <a class="btn mx-5" asp-controller="Funcionario" asp-action="Create"><i class="bi bi-person-plus fs-3"></i></a>
+    <a class="btn mx-5 icone" asp-controller="Funcionario" asp-action="Create"><i class="bi bi-person-plus fs-3"></i></a>
 
 </div>
 
+<hr />
+
 <div class="container">
 
-    <table id="Funcionario" class="table table-dark table-striped mt-5">
+    <table id="Funcionario" class="table table-dark table-striped mt-5 caption-top">
+        <caption>
+            <div class="row g-3">
+                <div class="col-sm-7">
+                    <h2>Lista de Funcionarios</h2>
+                </div>
+                <div class="col-sm">
+                </div>
+                <div class="col-sm">
+                    <input type="text" id="filtro" class="form-control mb-2" placeholder="Pesquisar...">
+                </div>
+            </div>
+        </caption>
         <thead>
             <tr>
                 <th scope="col">Nome</th>
@@ -23,7 +37,7 @@
                 <th scope="col"></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody class="table-group-divider" id="tabela">
             @if (Model != null)
             {
 
@@ -51,51 +65,70 @@
     </table>
 </div>
 
-@*<h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nome)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Telefone)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CPF)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Codigo)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nome)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Telefone)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CPF)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Codigo)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
-*@
+<!-- Paginação Bootstrap -->
+<nav>
+    <ul class="pagination justify-content-center" id="paginacao"></ul>
+</nav>
+
+<script>
+       const linhasPorPagina = 6;
+    let paginaAtual = 1;
+
+    const linhas = Array.from(document.querySelectorAll("#tabela tr"));
+
+    function mostrarPagina(pagina) {
+        paginaAtual = pagina;
+
+        const inicio = (pagina - 1) * linhasPorPagina;
+        const fim = inicio + linhasPorPagina;
+
+        linhas.forEach((linha, index) => {
+            linha.style.display = (index >= inicio && index < fim) ? "" : "none";
+        });
+
+        renderizarPaginacao();
+    }
+
+    function renderizarPaginacao() {
+        const totalPaginas = Math.ceil(linhas.length / linhasPorPagina);
+        const paginacao = document.getElementById("paginacao");
+
+        paginacao.innerHTML = "";
+
+        for (let i = 1; i <= totalPaginas; i++) {
+            let li = document.createElement("li");
+            li.className = "page-item " + (i === paginaAtual ? "active" : "");
+
+            let a = document.createElement("a");
+            a.className = "page-link";
+            a.innerText = i;
+            a.href = "#";
+            a.onclick = (e) => {
+                e.preventDefault();
+                mostrarPagina(i);
+            };
+
+            li.appendChild(a);
+            paginacao.appendChild(li);
+        }
+    }
+
+
+    // 🔍 Filtro funcionando junto
+    document.getElementById("filtro").addEventListener("keyup", function () {
+        const valor = this.value.toLowerCase();
+
+        linhas.forEach(linha => {
+            const texto = linha.textContent.toLowerCase();
+            linha.style.display = texto.includes(valor) ? "" : "none";
+        });
+
+        // reinicia paginação após filtro
+        paginaAtual = 1;
+        renderizarPaginacao();
+    });
+
+    // inicialização
+    mostrarPagina(1);
+</script>
